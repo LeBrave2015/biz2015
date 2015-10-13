@@ -11,7 +11,9 @@ The 1.4 billion Chinese people.
 
 Problems intended to solve:
 We help Chinese travelers to share their traveling experience. 
-The travelers will be able to store their photos on our site and write blogs. Other users, when granted permission, will be able to make comments. In addition, we will allow the users to vote for the most inspiring image of the week: Image of the Week.
+The travelers will be able to store their photos on our site and write blogs. Other users, when granted permission, will be able to make comments. 
+We will also sort travel experiences by destinations and allow users to describe the destination. They will be able to create a travel destination and update information about this destination like Wikipedia.
+In addition, we will allow the users to vote for the most inspiring image of the week: Image of the Week.
 
 Minimum requirements: 
 We allow users to create, update and delete accounts. Each account holder will have a user name and a dedicated webpage, and will be able to upload their photos and write blogs. 
