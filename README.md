@@ -1,4 +1,4 @@
-Member 1: Shengbo Ge, sge3@u.Rochester.edu 
+Member 1: Shengbo Ge, sge3@u.rochester.edu 
 Member 2: Yu Wang, ywang176@ur.rochester.edu
 
 Milestone 1
