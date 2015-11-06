@@ -45,66 +45,13 @@ var sqlite3 = require('sqlite3').verbose();
 
 var db = new sqlite3.Database('wanyou.db');
 
-db.serialize(function() {
+
 
   db.run('CREATE TABLE IF NOT EXISTS wanyou_user (name TEXT, email TEXT)');
  
-/*  var stmt = db.prepare('INSERT INTO wanyou_user VALUES (?, ?)');
 
-  for (var i = 0; i < 10; i++) {
-    stmt.run('YU ' + i);
-  }
-
-  stmt.finalize();
-*/
-  	/*db.each('SELECT rowid AS id, info FROM lorem', function(err, row) {
-    console.log(row.id + ': ' + row.info); 
-  });*/
-});
 
 //db.close();
-
-
-
-
-
-
-// REST API as described in http://pgbovine.net/rest-web-api-basics.htm
-
-/* Run through a full API test session with curl (commands typed after '$',
-   outputs shown on the line below each command) ...
-
-$ curl -X GET http://localhost:3000/users
-["Philip","Jane","John"]
-
-$ curl -X GET http://localhost:3000/users/Philip
-{"name":"Philip","job":"professor","pet":"cat.jpg"}
-
-$ curl -X PUT --data "job=bear_wrangler&pet=bear.jpg" http://localhost:3000/users/Philip
-OK
-
-$ curl -X GET http://localhost:3000/users/Philip
-{"name":"Philip","job":"bear_wrangler","pet":"bear.jpg"}
-
-$ curl -X DELETE http://localhost:3000/users/Philip
-OK
-
-$ curl -X GET http://localhost:3000/users/Philip
-{}
-
-$ curl -X GET http://localhost:3000/users
-["Jane","John"]
-
-$ curl -X POST --data "name=Carol&job=scientist&pet=dog.jpg" http://localhost:3000/users
-OK
-
-$ curl -X GET http://localhost:3000/users
-["Jane","John","Carol"]
-
-$ curl -X GET http://localhost:3000/users/Carol
-{"name":"Carol","job":"scientist","pet":"dog.jpg"}
-
-*/
 
 // CREATE a new user
 //
@@ -120,23 +67,43 @@ app.post('/users', function (req, res) {
     return; // return early!
   }
 
-  // check if user's name is already in database; if so, send an error
-  /*for (var i = 0; i < fakeDatabase.length; i++) {
-    var e = fakeDatabase[i];
-    if (e.name == myName) {
-      res.send('ERROR');
-      return; // return early!
-    }
-  } 
-
-  fakeDatabase.push(postBody);
-  */
-
-
   // otherwise add the user to the database by pushing (appending)
   // postBody to the fakeDatabase list
  // db.run("INSERT INTO wanyou_user VALUES("+userName+", "+userEmail+")");
-db.run("INSERT INTO wanyou_user (name, email) VALUES (?,?)", [userName,userEmail]);
+
+//double check
+  var newMember=false;
+/*
+  db.all("SELECT * FROM wanyou_user", function (err, row) {
+    return;
+   console.log(row);
+//   for (var i = 0; i < row.length; i++) {
+    //console.log(row[i].email);
+    //console.log(row[i].name);
+    //console.log(userName+'!');
+    //console.log(row[i].name+'?');
+      if (row.name==userName)
+      { 
+        return;
+      //  console.log('hello');
+      //  newMember=true;
+      //  console.log("My value:"+ newMember);
+      }
+//    }
+  });
+//
+*/
+  if (!newMember){
+    db.run("INSERT INTO wanyou_user (name, email) VALUES (?,?)", [userName,userEmail]);
+ //   console.log(newMember+'%');
+  }
+  else 
+  {
+    res.send('accountAlreadyExist');
+    return;
+
+  }
+  
 //db.run("INSERT OR IGNORE INTO wanyou_user (name, email) VALUES (?,?)", [userName,userEmail]);
   /*
   db.all("SELECT * FROM wanyou_user", function(err, row){
@@ -154,7 +121,6 @@ db.run("INSERT INTO wanyou_user (name, email) VALUES (?,?)", [userName,userEmail
 app.get('/users/*', function (req, res) {
   var EmailToLookup = req.params[0]; // this matches the '*' part of '/users/*' above
   // try to look up in fakeDatabase
-  console.log(EmailToLookup);
 /*db.all("SELECT * FROM wanyou_user WHERE email=EmailToLookup", function(err, row){
   	console.log(row);
   }); */
@@ -162,9 +128,9 @@ app.get('/users/*', function (req, res) {
 	console.log(row);
       }); */
 
-db.all("SELECT * FROM wanyou_user", function (err, row) {
+  db.all("SELECT * FROM wanyou_user", function (err, row) {
 	//console.log("222");
-	for (var i = 0; i < row.length; i++) {
+	 for (var i = 0; i < row.length; i++) {
 		//console.log(row[i].email);
 		//console.log(row[i].name);
     if (row[i].email==EmailToLookup)
@@ -174,7 +140,7 @@ db.all("SELECT * FROM wanyou_user", function (err, row) {
     	return;
     }}
 
-   });
+  });
 });
 
 /*

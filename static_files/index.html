@@ -30,8 +30,8 @@ http://localhost:3000/fakebook.html
 <script type="text/javascript">
 
 $(document).ready(function() {
-  var d = new Date();
-  $("#time").html("The current time is " + d+'.');
+  $("#time").html("The current time is " + new Date()+'.');
+  setInterval(function(){$("#time").html("The current time is " + new Date()+'.');}, 1000);
   // define a generic Ajax error handler:
   // http://api.jquery.com/ajaxerror/
   $(document).ajaxError(function() {
@@ -40,7 +40,6 @@ $(document).ready(function() {
 
 
   $("#createButton").click(function() {
-    console.log("444");
     $.ajax({
       // The URL for the request -- note the simple REST API!
       // all URLs are relative to http://localhost:3000/
@@ -54,9 +53,12 @@ $(document).ready(function() {
       success: function( data ) {
         console.log("Our company received your application: ", data);
         if (data == 'OK') {
-          $("#status").html("Welcome! You are now part of Wanyou!");
+          var name=$("#nameBox").val();
+          $("#status").html("Welcome " + name + "! You are now part of Wanyou!");
+          $("#emailBox").val('');
+          $("#nameBox").val('');
         } else {
-          $("#status").html("Error: try again!");
+          $("#status").html("Sorry! Account name already exists!");
         }
       },
 
@@ -66,7 +68,6 @@ $(document).ready(function() {
   
 
  $("#logInButton").click(function() { 
-    console.log("333");
     // From: http://learn.jquery.com/ajax/jquery-ajax-methods/
     // Using the core $.ajax() method
     $.ajax({
@@ -81,6 +82,12 @@ $(document).ready(function() {
 
         if (data) {
           $("#nameDiv").html("Hello, you are logged in! " + data);
+         // window.location.assign('log_in.html');
+          document.cookie = "user="+data;
+          document.cookie = "email="+"wang";
+          var myWindow=window.open('log_in.html');
+          myWindow.bgColor="black";
+       //   myWindow.document.write("<p>la vie est belle.</p>");
         } else {
           $("#status").html("Error: could not find user!");
           // clear the profile display
