@@ -1,175 +1,166 @@
 <html>
-
-<!--
-
-Lectures 11 and 12 - CSC 210 Fall 2015
-Philip Guo
-
-This is the frontend for the Fakebook web app, which demonstrates CRUD
-with Ajax using a REST API. (../server.js is the backend)
-
-Start ../server.js and then visit this URL to view this webpage:
-
-http://localhost:3000/fakebook.html
-
--->
-
-<head>
-<title>Wanyou</title>
-<style type="text/css">
-     
-      img {
-        width: 300px;
+  <head>
+    <title>Wan'U</title>
+    
+    <style type="text/css"> 
+      body {
+        background-image:url("background.gif");
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
       }
-      p#myLine {
-        color: red;
+      h1{
+        font-size: 60px;
+        text-align:center;
+        font-family: "Verdana";
+        color: black;
+      }
+      #introduction{
+        text-align:center;
+        font-family: "Lucida Console";
+        color: black;
+      }
+      img {
+        width: 70%;
+        margin: 20px;
+      }
+      .display{
+        overflow: auto;
+        width: 100%;
+        background-color:rgba(0,0,0,0.2);
+      }
+      .display>.inner{
+        font-size: 30px;
+        font-family: "Verdana";
+        text-align:center;
+        float: left;
+        width: 50%;
+        opacity: 1;
+      }
+      .label{
+        margin: 10px auto;
+        font-family: Lucida Console;
+        font-size: 20px;
+      }
+
+      .login{
+        margin: 10px auto;
+        width: 60%;
+        border:3px solid #73AD21;
+        padding: 10px;
+      }
+      .login>#input{
+        margin: 10px auto;
+        
+      }
+      #time{
+        position: absolute;
+        right: 5px;
+        top: 10px;
+        font-size: 10px;
       }
     </style>
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 
-<script type="text/javascript">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 
-$(document).ready(function() {
-  $("#time").html("The current time is " + new Date()+'.');
-  setInterval(function(){$("#time").html("The current time is " + new Date()+'.');}, 1000);
-  // define a generic Ajax error handler:
-  // http://api.jquery.com/ajaxerror/
-  $(document).ajaxError(function() {
-    alert("Sorry, there was a problem!");
-  });
+    <script type="text/javascript">
 
+      $(document).ready(function() {
 
-  $("#createButton").click(function() {
-    $.ajax({
-      // The URL for the request -- note the simple REST API!
-      // all URLs are relative to http://localhost:3000/
-      url: "users/",
-      type: "POST",
-      dataType : "text", // this URL returns a plain text string, not JSON
+        $("#time").html("Current time: " + new Date());
+        setInterval(function(){$("#time").html("Current time: " + new Date());}, 1000);
 
-      data : { name: $("#nameBox").val(),
-               email: $("#emailBox").val(),
-             },
-      success: function( data ) {
-        console.log("Our company received your application: ", data);
-        if (data == 'OK') {
-          var name=$("#nameBox").val();
-          $("#status").html("Welcome " + name + "! You are now part of Wanyou!");
-          $("#emailBox").val('');
-          $("#nameBox").val('');
-        } else {
-          $("#status").html("Sorry! Account name already exists!");
-        }
-      },
+        $(document).ajaxError(function() {
+          alert("An error detected!");
+        });
 
-    });
-  });
- 
-  
+        $("#createButton").click(function() {
+          $.ajax({
+            url: "users/",
+            type: "POST",
+            dataType : "text",
 
- $("#logInButton").click(function() { 
-    // From: http://learn.jquery.com/ajax/jquery-ajax-methods/
-    // Using the core $.ajax() method
-    $.ajax({
-      // The URL for the request -- note the simple REST API!
-      // all URLs are relative to http://localhost:3000/
-      url: "users/" + $("#logInEmailBox").val(),
-      type: "GET",
-      dataType : "text", // this URL returns data in text format
+            data : {  name: $("#nameBox").val(),
+                      email: $("#emailBox").val(),
+                    },
+            success: function( data ) {
+              console.log("Our company received your application: ", data);
+              if (data == 'Account created') {
+                var name=$("#nameBox").val();
+                alert("Welcome " + name + "! You are now part of Wanyou!");
+                document.getElementById("emailBox").value = "";
+                document.getElementById("nameBox").value = "";
+              } 
+              else {
+                if (data=='Error: name already exists.') alert("Sorry, Account name already exists. Try another!");
+                if (data=='Error: email already exists.') alert("Sorry, Account email already exists. Try another!");
+                $("#nameBox").val('');
+                $("#emailBox").val('');
+              }
+            },
+          });
+        });
 
-      success: function( data ) {
-        console.log("You received some data!", data);
+        $("#logInButton").click(function() { 
+          $.ajax({
+            url: "users/" + $("#logInEmailBox").val(),
+            type: "GET",
+            dataType : "text", 
 
-        if (data) {
-          $("#nameDiv").html("Hello, you are logged in as <b>" +data+"</b>.");
-          document.cookie = "user="+data;
-          var myWindow=window.open('log_in.html');
-       //   myWindow.document.write("<p>la vie est belle.</p>");
-        } else {
-          $("#status").html("Error: could not find user!");
-          // clear the profile display
-        }
-      },
-    });
-  });
-/*
-  $("#updateButton").click(function() {
-    $.ajax({
-      // The URL for the request -- note the simple REST API!
-      // all URLs are relative to http://localhost:3000/
-      url: "users/" + $("#nameBox").val(),
-      type: "PUT",
-      dataType : "text", // this URL returns a plain text string, not JSON
+            success: function( data ) {
+              if (data) {
+                document.cookie = "user="+data;
+                window.location.replace('log_in.html');
+              } 
+              else {
+                alert("Sorry, you need to sign up before log in!");
+              }
+            },
+          });
+        });
+      });
+    </script>
 
-      data : { job: $("#jobBox").val(),
-               pet: $("#petBox").val()
-             },
+  </head>
 
-      success: function( data ) {
-        console.log("You received some data!", data);
-        if (data == 'OK') {
-          $("#status").html("Successfully updated user");
-        } else {
-          $("#status").html("Error: could not update user");
-        }
-      },
-    });
-  });
-
-  $("#deleteButton").click(function() {
-    $.ajax({
-      // The URL for the request -- note the simple REST API!
-      // all URLs are relative to http://localhost:3000/
-      url: "users/" + $("#nameBox").val(),
-      type: "DELETE",
-      dataType : "text", // this URL returns a plain text string, not JSON
-
-      success: function( data ) {
-        console.log("You received some data!", data);
-        if (data == 'OK') {
-          $("#status").html("Successfully deleted!");
-        } else {
-          $("#status").html("Error: could not delete!");
-        }
-      },
-    });
-  });
-  */
-});
-
-</script>
-
-</head>
   <body>
-  <h1>Welcome to Wanyou!</h1>
-  <p>Our website is dedicated to sharing traveling information! Each week we select one image as la plus belle .</p>
-  <div id="time"></div>
-  <p>Visit Paris:</p>
-  <img src="index_eiffel.jpg"/>
-  <p>Visit Geneva:</p>
-  <img src="index_geneva.jpg"/>
-  <br>
-  Email Log In: <input id="logInEmailBox" type="text" size="20"/>
-  <button id="logInButton">Sign in</button>
-   
-  
-    <p>
-    Name: <input id="nameBox" type="text" size="20"/>
-    Email: <input id="emailBox" type="text" size="20"/>
- 
-    <button id="createButton">Sign up</button>
-    <!--<button id="readButton">Read user's profile</button>
-    <button id="updateButton">Update user's profile</button>
-    <button id="deleteButton">Delete user</button> -->
-    </p>
+    <h1>Welcome to Wan'U!</h1>
+    
+    <p id="introduction">Our website is dedicated to sharing traveling information! Each week we select one image as la plus belle.</p>
 
-    <!-- empty placeholders -->
-    <div id="nameDiv"></div>
-    <div id="emailDiv"></div>
-   <!-- <img id="profileImage" style="width: 300px;"/>-->
+    <div id="time"></div>
+    <br>
+    <div class="display">
+      <div class="inner">
+        <div >Visit Paris:</div>
+        <img src="index_eiffel.jpg"/>
+      </div>
+      <div class="inner">
+        <div>Visit Geneva:</div>
+        <img src="index_geneva.jpg"/>
+      </div>
+    </div>
 
-    <hr/>
+    <br>
 
-    <div id="status"></div>
+    <div class="login">
+      <div class="label"> Already a member of Wan'U? Sign in with your email:</div> 
+        <div id="input">
+          Email: <input id="logInEmailBox" type="text" size="20"/> <button id="logInButton">Sign in</button>
+        </div>
+    </div>
+    
+    <div class="login">
+      <div class="label"> New member? Sign up here:</div>
+        <div id="input">
+          Name: <input id="nameBox" type="text" size="20"/>
+          Email: <input id="emailBox" type="text" size="20"/>
+          <button id="createButton">Sign up</button>
+        </div>
+    </div>
+
   </body>
 </html>
+
+<!--<button id="readButton">Read user's profile</button>
+    <button id="updateButton">Update user's profile</button>
+    <button id="deleteButton">Delete user</button> -->

@@ -1,67 +1,108 @@
 <html>
-
-<!--
-
-Lectures 11 and 12 - CSC 210 Fall 2015
-Philip Guo
-
-This is the frontend for the Fakebook web app, which demonstrates CRUD
-with Ajax using a REST API. (../server.js is the backend)
-
-Start ../server.js and then visit this URL to view this webpage:
-
-http://localhost:3000/fakebook.html
-
--->
-
-<head>
-<title>Wanyou</title>
-<style type="text/css">
-     
+  <head>
+    <title>Wan'U</title>
+    <style type="text/css">
       img {
         height: 350;
         width: 350;
       }
-      h1#header {
+      #header {
         color: black;
+        font-size: 50px;
+        font-family: "Lucida Console";
+      }
+      i{
+        font-size: 70px;
+        font-family: "Verdana";
+        font-style: normal;
+        font-weight: bold;
       }
     </style>
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 
-<script type="text/javascript">
-$(document).ready(function() {
+    <script type="text/javascript">
 
-  $("#time").html("The current time is " + new Date()+'.');
-  setInterval(function(){$("#time").html("The current time is " + new Date()+'.');}, 1000);
+      $(document).ready(function() {
+    
+        // readMe Cookie
+        function readCookie(name) {
+          var nameEQ = name + "=";
+          var ca = document.cookie.split(';');
+          for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+          }
+          return null;
+        };
 
-  function readCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
-      var c = ca[i];
-      while (c.charAt(0)==' ') c = c.substring(1,c.length);
-      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-    }
-    return null;
-  }
-  console.log(document.cookie);
-  $("#header").html("Welcome to Wanyou, <i>" +readCookie('user')+'</i>.');
-})
+        console.log("current cookie"+document.cookie);
 
-</script>
+        $("#time").html("The current time is " + new Date()+'.');
+        setInterval(function(){$("#time").html("The current time is " + new Date()+'.');}, 1000);
+
+        $("#header").html("Welcome back, <i>" +readCookie('user')+'</i>.');
 
 
 
-</head>
+      });
+    </script>
+  </head>
+  
   <body>
-  <h1 id='header'>Welcome</h1>
-<p id="blog">My Album:</p>
-<hr>
-<img src="istanbul.jpg"/></li>
-<hr>
-<img src="jerusalem.jpg"/></li>
-<hr>
-<div id="status"></div>
-<div id='time'></div>
-</body>
+    <h1 id='header'>Welcome</h1>
+    
+    <div>
+      <p id="blog">My Album:</p>
+      <img src="istanbul.jpg"/></li>
+      <img src="jerusalem.jpg"/></li>
+    </div>
+    <div id='time'></div>
+  </body>
 </html>
+<!--
+/*
+  $("#updateButton").click(function() {
+    $.ajax({
+      // The URL for the request - note the simple REST API!
+      // all URLs are relative to http://localhost:3000/
+      url: "users/" + $("#nameBox").val(),
+      type: "PUT",
+      dataType : "text", // this URL returns a plain text string, not JSON
+
+      data : { job: $("#jobBox").val(),
+               pet: $("#petBox").val()
+             },
+
+      success: function( data ) {
+        console.log("You received some data!", data);
+        if (data == 'OK') {
+          $("#status").html("Successfully updated user");
+        } else {
+          $("#status").html("Error: could not update user");
+        }
+      },
+    });
+  });
+
+  $("#deleteButton").click(function() {
+    $.ajax({
+      // The URL for the request - note the simple REST API!
+      // all URLs are relative to http://localhost:3000/
+      url: "users/" + $("#nameBox").val(),
+      type: "DELETE",
+      dataType : "text", // this URL returns a plain text string, not JSON
+
+      success: function( data ) {
+        console.log("You received some data!", data);
+        if (data == 'OK') {
+          $("#status").html("Successfully deleted!");
+        } else {
+          $("#status").html("Error: could not delete!");
+        }
+      },
+    });
+  });
+  */
+
+-->

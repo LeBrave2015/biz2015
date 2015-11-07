@@ -1,9 +1,3 @@
-// Lectures 11 and 12 - CSC 210 Fall 2015
-// Philip Guo
-
-// This is the backend for the Fakebook web app, which demonstrates CRUD
-// with Ajax using a REST API. (static_files/fakebook.html is the frontend)
-
 // Prerequisites - first run:
 //   npm install express
 //   npm install body-parser
@@ -11,52 +5,22 @@
 // then run:
 //   node server.js
 //
-// and the frontend can be viewed at http://localhost:3000/fakebook.html
 
 var express = require('express');
 var app = express();
-// required to support parsing of POST request bodies
 var bodyParser = require('body-parser');
-app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-// put all of your static files (e.g., HTML, CSS, JS, JPG) in the static_files/
-// sub-directory, and the server will serve them from there. e.g.,:
-//
-// http://localhost:3000/fakebook.html
-// http://localhost:3000/cat.jpg
-//
-// will send the file static_files/cat.jpg to the user's Web browser
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true })); 
 app.use(express.static('static_files'));
-
-
-// simulates a database in memory, to make this example simple and
-// self-contained (so that you don't need to set up a separate database).
-// note that a real database will save its data to the hard drive so
-// that they become persistent, but this fake database will be reset when
-// this script restarts. however, as long as the script is running, this
-// database can be modified at will.
-var fakeDatabase = [
-  {name: 'Philip', email: '123@gmail.com' },
-  {name: 'Jane',   email: '234@gmail.com'  },
-  {name: 'John',   email: '345@gmail.com' },
-];
 
 var sqlite3 = require('sqlite3').verbose();
 
-var db = new sqlite3.Database('wanyou.db');
+var db = new sqlite3.Database('WanU.db');
 
-
-
-  db.run('CREATE TABLE IF NOT EXISTS wanyou_user (name TEXT, email TEXT)');
- 
-
-
-//db.close();
+db.run('CREATE TABLE IF NOT EXISTS WanU_user (name TEXT, email TEXT)');
+db.run('CREATE TABLE IF NOT EXISTS WanU_user_info (name TEXT, email TEXT)');
 
 // CREATE a new user
-//
-// To test with curl, run:
-//   curl -X POST --data "name=Carol&job=scientist&pet=dog.jpg" http://localhost:3000/users
 app.post('/users', function (req, res) {
   var postBody = req.body;
   var userName = postBody.name;
@@ -64,32 +28,34 @@ app.post('/users', function (req, res) {
   
   // must have a name!
   if (!userName || !userEmail) {
-    res.send('ERROR');
+    res.send('ERROR: need more Information');
     return; // return early!
   }
 
-  var newMember=true;
+  var newMemberName=true;
+  var newMemberEmail=true;
 
-  db.all("SELECT * FROM wanyou_user", function (err, row) {
+  db.all("SELECT * FROM WanU_user", function (err, row) {
     for (var i = 0; i < row.length; i++) {
-    if (row[i].name==userName)
-    { 
-     newMember=false;
-    // console.log("changed!!!!!!!!!!!!");
-    }}
-
-
-      console.log("check: ", newMember)
-  if (newMember){
-    db.run("INSERT INTO wanyou_user (name, email) VALUES (?,?)", [userName,userEmail]);
-    res.send('OK');
-    console.log('OK');
+      if (row[i].name==userName)     
+      { 
+      newMemberName=false;
+      }
+      if (row[i].email==userEmail)     
+      { 
+      newMemberEmail=false;
+      }
     }
-  else 
-  {
-    res.send('accountAlreadyExist');
-    console.log('accountAlreadyExist');
-  }
+    if (newMemberName && newMemberEmail){
+      db.run("INSERT INTO WanU_user (name, email) VALUES (?,?)", [userName,userEmail]);
+      res.send('Account created');
+      console.log('Account created');
+    }
+    else 
+    {
+      if (!newMemberName)res.send('Error: name already exists.');
+      if (!newMemberEmail)res.send('Error: email already exists');
+    }
 
   });
   
@@ -99,14 +65,15 @@ app.post('/users', function (req, res) {
 
 app.get('/users/*', function (req, res) {
   var EmailToLookup = req.params[0]; 
-  db.all("SELECT * FROM wanyou_user", function (err, row) {
-	 for (var i = 0; i < row.length; i++) {
-    if (row[i].email==EmailToLookup)
-    { 
-    	res.send(row[i].name);
-    	return;
-    }}
-
+  db.all("SELECT * FROM WanU_user", function (err, row) {
+    for (var i = 0; i < row.length; i++) {
+      if (row[i].email==EmailToLookup)
+      { 
+    	 res.send(row[i].name);
+    	 return;
+      }
+    }
+    res.send();
   });
   return;
 });
