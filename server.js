@@ -61,86 +61,54 @@ app.post('/users', function (req, res) {
   var postBody = req.body;
   var userName = postBody.name;
   var userEmail= postBody.email;
+  
   // must have a name!
   if (!userName || !userEmail) {
     res.send('ERROR');
     return; // return early!
   }
 
-  // otherwise add the user to the database by pushing (appending)
-  // postBody to the fakeDatabase list
- // db.run("INSERT INTO wanyou_user VALUES("+userName+", "+userEmail+")");
+  var newMember=true;
 
-//double check
-  var newMember=false;
-/*
   db.all("SELECT * FROM wanyou_user", function (err, row) {
-    return;
-   console.log(row);
-//   for (var i = 0; i < row.length; i++) {
-    //console.log(row[i].email);
-    //console.log(row[i].name);
-    //console.log(userName+'!');
-    //console.log(row[i].name+'?');
-      if (row.name==userName)
-      { 
-        return;
-      //  console.log('hello');
-      //  newMember=true;
-      //  console.log("My value:"+ newMember);
-      }
-//    }
-  });
-//
-*/
-  if (!newMember){
+    for (var i = 0; i < row.length; i++) {
+    if (row[i].name==userName)
+    { 
+     newMember=false;
+    // console.log("changed!!!!!!!!!!!!");
+    }}
+
+
+      console.log("check: ", newMember)
+  if (newMember){
     db.run("INSERT INTO wanyou_user (name, email) VALUES (?,?)", [userName,userEmail]);
- //   console.log(newMember+'%');
-  }
+    res.send('OK');
+    console.log('OK');
+    }
   else 
   {
     res.send('accountAlreadyExist');
-    return;
-
+    console.log('accountAlreadyExist');
   }
-  
-//db.run("INSERT OR IGNORE INTO wanyou_user (name, email) VALUES (?,?)", [userName,userEmail]);
-  /*
-  db.all("SELECT * FROM wanyou_user", function(err, row){
-  	console.log(row);
+
   });
-	*/
-  res.send('OK');
+  
+  return;
 });
 
-// READ profile data for a user
-//
-// To test with curl, run:
-//   curl -X GET http://localhost:3000/users/Philip
-//   curl -X GET http://localhost:3000/users/Jane
-app.get('/users/*', function (req, res) {
-  var EmailToLookup = req.params[0]; // this matches the '*' part of '/users/*' above
-  // try to look up in fakeDatabase
-/*db.all("SELECT * FROM wanyou_user WHERE email=EmailToLookup", function(err, row){
-  	console.log(row);
-  }); */
-/*db.all("SELECT * FROM wanyou_user", function (err, row) {
-	console.log(row);
-      }); */
 
+app.get('/users/*', function (req, res) {
+  var EmailToLookup = req.params[0]; 
   db.all("SELECT * FROM wanyou_user", function (err, row) {
-	//console.log("222");
 	 for (var i = 0; i < row.length; i++) {
-		//console.log(row[i].email);
-		//console.log(row[i].name);
     if (row[i].email==EmailToLookup)
     { 
-    	//console.log(row[i].name);
     	res.send(row[i].name);
     	return;
     }}
 
   });
+  return;
 });
 
 /*

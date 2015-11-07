@@ -18,18 +18,21 @@ http://localhost:3000/fakebook.html
 <title>Wanyou</title>
 <style type="text/css">
      
-      img#header {
-        height: 25%;
-        width: 100%;
+      img {
+        height: 350;
+        width: 350;
       }
-      p#myLine {
-        color: red;
+      h1#header {
+        color: black;
       }
     </style>
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 
 <script type="text/javascript">
 $(document).ready(function() {
+
+  $("#time").html("The current time is " + new Date()+'.');
+  setInterval(function(){$("#time").html("The current time is " + new Date()+'.');}, 1000);
 
   function readCookie(name) {
     var nameEQ = name + "=";
@@ -42,8 +45,7 @@ $(document).ready(function() {
     return null;
   }
   console.log(document.cookie);
-  $("#header").html("Welcome to Wanyou: " +readCookie('user')+'.');
-
+  $("#header").html("Welcome to Wanyou, <i>" +readCookie('user')+'</i>.');
 })
 
 </script>
@@ -53,66 +55,13 @@ $(document).ready(function() {
 </head>
   <body>
   <h1 id='header'>Welcome</h1>
-  
-   <img id='header' src="user_header.jpg"/>
-
-
-
-<!--
-
-<script>
-$(document).ready(function() {
-  $("#time").html("The current time is " + new Date()+'.');
-  setInterval(function(){$("#time").html("The current time is " + new Date()+'.');}, 1000);
-  // define a generic Ajax error handler:
-  // http://api.jquery.com/ajaxerror/
-  $(document).ajaxError(function() {
-    alert("Sorry, there was a problem!");
-  });
-
- $("#logInButton").click(function() { 
-    // From: http://learn.jquery.com/ajax/jquery-ajax-methods/
-    // Using the core $.ajax() method
-    $.ajax({
-      // The URL for the request -- note the simple REST API!
-      // all URLs are relative to http://localhost:3000/
-      url: "users/" + $("#logInEmailBox").val(),
-      type: "GET",
-      dataType : "text", // this URL returns data in text format
-
-      success: function( data ) {
-        console.log("You received some data!", data);
-
-        if (data) {
-          $("#nameDiv").html("Hello, you are logged in! " + data);
-          window.location.assign('log_in.html');
-        } else {
-          $("#status").html("Error: could not find user!");
-          // clear the profile display
-        }
-      },
-    });
-  });
-
- </script>
-
--->
-
-
-
-
-
-
-
-
-
-<p id="blog">My Thought Collections:</p>
-<ul>
-  <li><img src="istanbul.jpg"/></li>
-  <li>Tea</li>
-  <li>Milk</li>
-</ul>
-<p>My Image Collections:</p>
-    <div id="status"></div>
-  </body>
+<p id="blog">My Album:</p>
+<hr>
+<img src="istanbul.jpg"/></li>
+<hr>
+<img src="jerusalem.jpg"/></li>
+<hr>
+<div id="status"></div>
+<div id='time'></div>
+</body>
 </html>

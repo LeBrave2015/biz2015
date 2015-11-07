@@ -81,12 +81,9 @@ $(document).ready(function() {
         console.log("You received some data!", data);
 
         if (data) {
-          $("#nameDiv").html("Hello, you are logged in! " + data);
-         // window.location.assign('log_in.html');
+          $("#nameDiv").html("Hello, you are logged in as <b>" +data+"</b>.");
           document.cookie = "user="+data;
-          document.cookie = "email="+"wang";
           var myWindow=window.open('log_in.html');
-          myWindow.bgColor="black";
        //   myWindow.document.write("<p>la vie est belle.</p>");
         } else {
           $("#status").html("Error: could not find user!");
