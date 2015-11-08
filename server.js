@@ -62,7 +62,7 @@ app.post('/users', function (req, res) {
     else 
     {
       if (!newMemberName)res.send('Error: name already exists.');
-      if (!newMemberEmail)res.send('Error: email already exists');
+      else if (!newMemberEmail)res.send('Error: email already exists.');
     }
 
   });
@@ -75,38 +75,21 @@ app.post('/user_pref', function (req, res) {
   var userName = postBody.name;
   var userLanguage= postBody.language;
   var userCity= postBody.city;
-  console.log(userName);
-  console.log(userLanguage);
-  console.log("City"+userCity);
   db.run("INSERT OR REPLACE INTO WanU_user_info (name,language,city) VALUES (?,?,?)", [userName,userLanguage, userCity]);
-  res.send('Pref Updated');
+//  res.send('Pref Updated');
 //  console.log('language updated');  
   return;
 });
 
 app.get('/user_pref/*', function (req, res) {
   var userName = req.params[0]; 
-  try{
     db.all("SELECT * FROM WanU_user_info WHERE name = ?", [userName], function(err, row){
-    if (err){
-      console.log(err);
-    }
-    else
-    { console.log(row);
-      console.log("length:"+row.length);
       if (row.length!=0){
-        var user_pref={name: row[0].name,   language: row[0].language,   city: row[0].city};
+        var user_pref={name: row[0].name, language: row[0].language, city: row[0].city};
         res.send(user_pref);
-        console.log('updated');  
         return;
       }
-    }
     });
-  } catch(err) 
-  {
-    res.send('null');
-    console.log('null');
-  }
   return;
 });
 
