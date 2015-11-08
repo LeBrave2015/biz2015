@@ -93,11 +93,13 @@ app.get('/user_pref/*', function (req, res) {
     }
     else
     { console.log(row);
-      console.log("hello");
-      var user_pref={name: row[0].name,   language: row[0].language,   city: row[0].city};
-      res.send(user_pref);
-      console.log('updated');  
-      return;
+      console.log("length:"+row.length);
+      if (row.length!=0){
+        var user_pref={name: row[0].name,   language: row[0].language,   city: row[0].city};
+        res.send(user_pref);
+        console.log('updated');  
+        return;
+      }
     }
     });
   } catch(err) 
