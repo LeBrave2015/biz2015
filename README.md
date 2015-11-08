@@ -4,7 +4,7 @@ Member 2: Yu Wang, ywang176@ur.rochester.edu
 Milestone 1
 
 Web application: 
-China_Travels_the_World.
+Wan'U
 
 Targeted audience: 
 The 1.4 billion Chinese people.
