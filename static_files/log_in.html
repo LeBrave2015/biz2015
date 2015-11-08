@@ -23,7 +23,21 @@
     <script type="text/javascript">
 
       $(document).ready(function() {
-    
+      var user =readCookie('user');
+      console.log("start");
+        $.ajax({
+            url: "user_pref/"+user,
+            type: "GET",
+            dataType : "json",
+
+            success: function( data ) {
+              console.log("data here:"+data);  
+              console.log(data.language);  
+              $("#language").val(data.language);
+              $("#city").val(data.city);
+            },
+          });
+
         // readMe Cookie
         function readCookie(name) {
           var nameEQ = name + "=";
@@ -36,16 +50,53 @@
           return null;
         };
 
-        console.log("current cookie"+document.cookie);
-
         $("#time").html("The current time is " + new Date()+'.');
         setInterval(function(){$("#time").html("The current time is " + new Date()+'.');}, 1000);
 
-        $("#header").html("Welcome back, <i>" +readCookie('user')+'</i>.');
+        $("#header").html("Welcome back, <i>" +user+'</i>.');
 
 
+        $( ".form-group" ).focusout(function() {
+        //alert("The text has been changed.");
+          $.ajax({
+            url: "user_pref/",
+            type: "POST",
+            dataType : "text",
+
+            data : {  name: readCookie('user'),
+                      language: $("#language").val(),
+                      city: $("#city").val(),
+                    },
+            success: function( data ) {
+              console.log(data);
+            },
+          });
+        });
+/*
+        $( "#city" ).focusout(function() {
+        //alert("The text has been changed.");
+          $.ajax({
+            url: "user_pref/",
+            type: "POST",
+            dataType : "text",
+
+            data : {  name: readCookie('user'),
+                      city: $("#city").val(),
+                    },
+            success: function( data ) {
+              console.log(data);
+              if (data == 'City updated') {
+                console.log("updated");
+              } 
+              else {
+              }
+            },
+          });
+        });
+*/
 
       });
+
     </script>
   </head>
   
@@ -57,11 +108,25 @@
       <img src="istanbul.jpg"/></li>
       <img src="jerusalem.jpg"/></li>
     </div>
+    <form action="/image/"+userName method="post" enctype="multipart/form-data">
+    <input type="file" name="add"/>  </form>
     <div id='time'></div>
+
+    <div class="container">
+      <h2>Personal Preferences</h2>
+      <div class="form-group">
+        <label for="language">language:</label>
+        <input type="text" class="form-control" id="language" placeholder="Enter language">
+      </div>
+      <div class="form-group">
+        <label for="city">City:</label>
+        <input type="text" class="form-control" id="city" placeholder="Enter city">
+      </div>
+    </div>
   </body>
 </html>
 <!--
-/*
+/*placeholder="Enter language"
   $("#updateButton").click(function() {
     $.ajax({
       // The URL for the request - note the simple REST API!

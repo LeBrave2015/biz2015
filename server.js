@@ -17,8 +17,8 @@ var sqlite3 = require('sqlite3').verbose();
 
 var db = new sqlite3.Database('WanU.db');
 
-db.run('CREATE TABLE IF NOT EXISTS WanU_user (name TEXT, email TEXT)');
-db.run('CREATE TABLE IF NOT EXISTS WanU_user_info (name TEXT, email TEXT)');
+db.run('CREATE TABLE IF NOT EXISTS WanU_user (name TEXT PRIMARY KEY, email TEXT)');
+db.run('CREATE TABLE IF NOT EXISTS WanU_user_info (name TEXT PRIMARY KEY, language TEXT, city TEXT)');
 
 // CREATE a new user
 app.post('/users', function (req, res) {
@@ -48,6 +48,14 @@ app.post('/users', function (req, res) {
     }
     if (newMemberName && newMemberEmail){
       db.run("INSERT INTO WanU_user (name, email) VALUES (?,?)", [userName,userEmail]);
+      //add a new directory
+      /*
+      var mkdirp = require('mkdirp');   
+      mkdirp('static_files/'+userName, function (err) {
+        if (err) console.error(err)
+        else console.log('image folder created!')
+      });
+      */
       res.send('Account created');
       console.log('Account created');
     }
@@ -62,6 +70,43 @@ app.post('/users', function (req, res) {
   return;
 });
 
+app.post('/user_pref', function (req, res) {
+  var postBody = req.body;
+  var userName = postBody.name;
+  var userLanguage= postBody.language;
+  var userCity= postBody.city;
+  console.log(userName);
+  console.log(userLanguage);
+  console.log("City"+userCity);
+  db.run("INSERT OR REPLACE INTO WanU_user_info (name,language,city) VALUES (?,?,?)", [userName,userLanguage, userCity]);
+  res.send('Pref Updated');
+//  console.log('language updated');  
+  return;
+});
+
+app.get('/user_pref/*', function (req, res) {
+  var userName = req.params[0]; 
+  try{
+    db.all("SELECT * FROM WanU_user_info WHERE name = ?", [userName], function(err, row){
+    if (err){
+      console.log(err);
+    }
+    else
+    { console.log(row);
+      console.log("hello");
+      var user_pref={name: row[0].name,   language: row[0].language,   city: row[0].city};
+      res.send(user_pref);
+      console.log('updated');  
+      return;
+    }
+    });
+  } catch(err) 
+  {
+    res.send('null');
+    console.log('null');
+  }
+  return;
+});
 
 app.get('/users/*', function (req, res) {
   var EmailToLookup = req.params[0]; 
