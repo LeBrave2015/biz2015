@@ -89,7 +89,7 @@
         background-color:rgba(50,200,50,0.3);
         position: absolute;
         width: 100%;
-        bottom: 30px;
+        bottom: 100px;
         height: 50%;
       }
       .picture_scroller{
@@ -98,12 +98,32 @@
         width: 100%;
         height: 90%;
       }
+      div.photo {
+        position: fixed;
+        bottom: 0;
+        left: 20px;
+        width: 300px;
+        /*border: 3px solid #73AD21;*/
+}
     </style>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 
     <script type="text/javascript">
+            // readMe Cookie
+       
 
       $(document).ready(function() {
+
+         function readCookie(name) {
+          var nameEQ = name + "=";
+          var ca = document.cookie.split(';');
+          for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+          }
+          return null;
+        };
         
         var user =readCookie('user');
 
@@ -118,17 +138,6 @@
             },
           });
 
-        // readMe Cookie
-        function readCookie(name) {
-          var nameEQ = name + "=";
-          var ca = document.cookie.split(';');
-          for(var i=0;i < ca.length;i++) {
-            var c = ca[i];
-            while (c.charAt(0)==' ') c = c.substring(1,c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-          }
-          return null;
-        };
 
         $("#time").val("Current time: " + new Date()+'.');
         setInterval(function(){$("#time").html("Current time: " + new Date()+'.');}, 1000);
@@ -149,10 +158,39 @@
           });
         });
 
-      });
+        // http://stackoverflow.com/questions/21044798/how-to-use-formdata-for-ajax-file-upload
+        $('#ADD').on('submit', function(){
+        console.log("submitted");
+       // console.log("length:"+document.forms[0].length);
+        var formData=new FormData(this);
 
-    </script>
-  </head>
+        console.log("submitting");
+
+          $.ajax({
+            url         : '/image',
+            contentType: false,
+            processData: false,
+            enctype: "multipart/form-data",
+            data        : formData,
+            type        : 'POST',
+         //   dataType    : 'text/plain',
+
+            success: function( data ) {
+            console.log("You received some data!");
+            },
+            // Code to run if the request fails
+           // error: function() {
+          //  alert( "Sorry, there was a problem!" );
+          //  } 
+
+            });
+
+        console.log("yeah");
+        }); 
+
+});
+</script>
+</head>
   
   <body>
     <h1 id='header'>Welcome</h1>
@@ -164,12 +202,9 @@
         <img src="jerusalem.jpg"/></li>
       </div>
     </div>
-    <!--
-    <form action="/image/"+userName method="post" enctype="multipart/form-data">
-    <input type="file" name="add"/>  </form>
-    -->
-    <div id='time'></div>
 
+    <div id='time'></div>
+  
     <div class="whole_pref_container">
       <div id='pref_main_label'>Personal Preferences</div>
       <div class="pref_container">
@@ -183,7 +218,16 @@
         </div>
       </div>
     </div>
-  </body>
+
+<div class="photo">
+    <form  id="ADD">
+    <div>Add to my album:</div>
+    <input type="file" name="image"/> 
+    <input type="submit" name ="submit"/>
+    </form>
+</div>
+
+</body>
 </html>
 <!--
 /*

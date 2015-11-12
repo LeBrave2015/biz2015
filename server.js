@@ -12,7 +12,7 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
 app.use(express.static('static_files'));
-
+const fs=require("fs");
 var sqlite3 = require('sqlite3').verbose();
 
 var db = new sqlite3.Database('WanU.db');
@@ -49,13 +49,13 @@ app.post('/users', function (req, res) {
     if (newMemberName && newMemberEmail){
       db.run("INSERT INTO WanU_user (name, email) VALUES (?,?)", [userName,userEmail]);
       //add a new directory
-      /*
+      
       var mkdirp = require('mkdirp');   
       mkdirp('static_files/'+userName, function (err) {
         if (err) console.error(err)
         else console.log('image folder created!')
       });
-      */
+      
       res.send('Account created');
       console.log('Account created');
     }
@@ -75,11 +75,62 @@ app.post('/user_pref', function (req, res) {
   var userName = postBody.name;
   var userLanguage= postBody.language;
   var userCity= postBody.city;
+  console.log("changing.");
   db.run("INSERT OR REPLACE INTO WanU_user_info (name,language,city) VALUES (?,?,?)", [userName,userLanguage, userCity]);
 //  res.send('Pref Updated');
 //  console.log('language updated');  
   return;
 });
+
+//https://coderwall.com/p/p-n7eq/file-uploads-with-jquery-html5-and-formdata
+//really simple file uploads with Express
+
+
+
+
+
+app.post('/image', function (req, res) {
+  console.log("reading.....");
+
+
+var express = require("express"),
+    app = express(),
+    formidable = require('formidable'),
+    util = require('util'),
+    fs   = require('fs-extra'),
+    qt   = require('quickthumb');
+
+/////////////
+var form = new formidable.IncomingForm();
+  form.parse(req, function(err, fields, files) {
+    res.writeHead(200, {'content-type': 'text/plain'});
+    res.write('received upload\n\n');
+  //  res.send('Account created');
+    res.end(util.inspect({fields: fields, files: files}));
+  });
+
+  form.on('end', function(fields, files) {
+    /* Temporary location of our uploaded file */
+
+
+    
+    var temp_path = this.openedFiles[0].path;
+    /* The file name of the uploaded file */
+     var file_name = this.openedFiles[0].name;
+    /* Location where we want to copy the uploaded file */
+     fs.copy(temp_path, __dirname + file_name, function(err) {  
+      if (err) {
+        console.error(err);
+      } else {
+        console.log("success!");
+      }
+    });
+  });
+  return;
+});
+
+
+
 
 app.get('/user_pref/*', function (req, res) {
   var userName = req.params[0]; 
