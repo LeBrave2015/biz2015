@@ -1,0 +1,75 @@
+{
+  "name": "js-cookie",
+  "version": "2.0.4",
+  "description": "A simple, lightweight JavaScript API for handling cookies",
+  "main": "src/js.cookie.js",
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [
+    "jquery-plugin",
+    "cookie",
+    "cookies",
+    "browser",
+    "amd",
+    "commonjs",
+    "client",
+    "js-cookie",
+    "browserify"
+  ],
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/js-cookie/js-cookie.git"
+  },
+  "author": {
+    "name": "Klaus Hartl"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "0.4.5",
+    "grunt-compare-size": "0.4.0",
+    "grunt-contrib-connect": "0.10.1",
+    "grunt-contrib-jshint": "0.11.1",
+    "grunt-contrib-nodeunit": "0.4.1",
+    "grunt-contrib-qunit": "0.7.0",
+    "grunt-contrib-uglify": "0.9.1",
+    "grunt-contrib-watch": "0.6.1",
+    "grunt-jscs": "1.6.0",
+    "grunt-saucelabs": "8.6.0",
+    "gzip-js": "0.3.2",
+    "qunitjs": "1.18.0",
+    "requirejs": "2.1.17"
+  },
+  "gitHead": "ce67410de68dc5831b45dc6630974fa0e0b75cf7",
+  "bugs": {
+    "url": "https://github.com/js-cookie/js-cookie/issues"
+  },
+  "homepage": "https://github.com/js-cookie/js-cookie#readme",
+  "_id": "js-cookie@2.0.4",
+  "_shasum": "5f43d1872118aaf5e7a16029b70976eb7315c6a5",
+  "_from": "js-cookie@*",
+  "_npmVersion": "2.10.1",
+  "_nodeVersion": "0.12.4",
+  "_npmUser": {
+    "name": "fagner",
+    "email": "gravatar@fagnermartins.com"
+  },
+  "dist": {
+    "shasum": "5f43d1872118aaf5e7a16029b70976eb7315c6a5",
+    "tarball": "http://registry.npmjs.org/js-cookie/-/js-cookie-2.0.4.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "fagner",
+      "email": "gravatar@fagnermartins.com"
+    },
+    {
+      "name": "carhartl",
+      "email": "klaus.hartl@gmail.com"
+    }
+  ],
+  "_resolved": "https://registry.npmjs.org/js-cookie/-/js-cookie-2.0.4.tgz"
+}

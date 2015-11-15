@@ -60,7 +60,8 @@
       }
     </style>
 
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script src="JS-api/jquery-2.1.4.js"></script>
+    <script src="JS-api/js.cookie.js"></script>
 
     <script type="text/javascript">
 
@@ -70,34 +71,35 @@
         setInterval(function(){$("#time").html("Current time: " + new Date());}, 1000);
 
         $(document).ajaxError(function() {
-          alert("An error detected!");
+          console.log("ajaxError");
         });
 
         $("#createButton").click(function() {
-          $.ajax({
-            url: "users/",
-            type: "POST",
-            dataType : "text",
+          if (($("#nameBox").val()=="")||
+              ($("#emailBox").val()=="")) 
+            alert("Sorry, need more information!");
+          else
+            $.ajax({
+              url: "users/",
+              type: "POST",
+              dataType : "text",
 
-            data : {  name: $("#nameBox").val(),
+              data : {  
+                      name: $("#nameBox").val(),
                       email: $("#emailBox").val(),
                     },
-            success: function( data ) {
-              console.log("Our company received your application: ", data);
-              if (data == 'Account created') {
-                var name=$("#nameBox").val();
-                alert("Welcome " + name + "! You are now part of Wanyou!");
-                document.getElementById("emailBox").value = "";
-                document.getElementById("nameBox").value = "";
-              } 
-              else {
-                if (data=='Error: name already exists.') alert("Sorry, Account name already exists. Try another!");
-                if (data=='Error: email already exists.') alert("Sorry, Account email already exists. Try another!");
+              success: function( data ) {
+                console.log(data);
+                if (data) {
+                  alert("Welcome " + $("#nameBox").val() + "! You are now part of Wanyou!");
+                } 
+                else {
+                  alert("Sorry, Account email already exists. Try another!");
+                }
                 $("#nameBox").val('');
                 $("#emailBox").val('');
-              }
-            },
-          });
+              },
+            });
         });
 
         $("#logInButton").click(function() { 
@@ -107,12 +109,17 @@
             dataType : "text", 
 
             success: function( data ) {
-              if (data) {
-                document.cookie = "user="+data;
+              if (data=="OK") {
+                Cookies.set('email', $("#logInEmailBox").val(), { expires: 1/48, path: '' });
                 window.location.replace('log_in.html');
+              }
+              else if (data=="Fail"){ 
+                alert("Sorry, account already logged in!");
+                $("#logInEmailBox").val("");
               } 
               else {
                 alert("Sorry, you need to sign up before log in!");
+                $("#logInEmailBox").val("");
               }
             },
           });

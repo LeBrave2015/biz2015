@@ -7,7 +7,7 @@
         background-repeat: no-repeat;
         background-size: 100% 100%;
       }
-      img {
+      .picture_scroller>img {
         position: relative;
         height: 80%;
         margin-top: 20px;
@@ -28,15 +28,29 @@
         font-style: normal;
         font-weight: bold;
       }
-      .whole_pref_container{
-        background-color:rgba(50,200,50,0.3);
+      #upper-right{
+         overflow: auto;
         padding-top: 15px;
         position: absolute;
-        width: 30%;
+        width: 40%;
         right: 20px;
         top: 50px;
       }
+      .whole_pref_container{
+       
+        background-color:rgba(50,200,50,0.3);
+        width: 70%;
+        float: left;
+      }
+      #logout_container{
+        margin: auto;
+        clear: left;
+        width: 30%;
+        float: left;
+        opacity: 1;
+      }
       .pref_container{
+        clear: both;
         margin: 10px auto;
         height: 80%;
         top: 30px;
@@ -98,52 +112,57 @@
         width: 100%;
         height: 90%;
       }
+      #logout{
+        width: 80%;
+      }
+      #logout:hover{
+        background-color:rgba(51,153,255,0.6);
+      }
       div.photo {
         position: fixed;
         bottom: 0;
         left: 20px;
         width: 300px;
         /*border: 3px solid #73AD21;*/
-}
+      }
     </style>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script src="JS-api/jquery-2.1.4.js"></script>
+    <script src="JS-api/js.cookie.js"></script>
 
     <script type="text/javascript">
             // readMe Cookie
-       
-
       $(document).ready(function() {
 
-         function readCookie(name) {
-          var nameEQ = name + "=";
-          var ca = document.cookie.split(';');
-          for(var i=0;i < ca.length;i++) {
-            var c = ca[i];
-            while (c.charAt(0)==' ') c = c.substring(1,c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-          }
-          return null;
-        };
-        
-        var user =readCookie('user');
+        var userEmail = Cookies.get('email');
+        var userName = "";
 
         $.ajax({
-            url: "user_pref/"+user,
-            type: "GET",
-            dataType : "json",
+          url: "user_pref/"+userEmail,
+          type: "GET",
+          dataType : "json",
 
-            success: function( data ) {
-              $("#language").val(data.language);
-              $("#city").val(data.city);
-            },
-          });
-
+          success: function( data ) {
+            $("#language").val(data.language);
+            $("#city").val(data.city);
+            userName = data.name;
+            $("#header").html("Welcome back, <i>" +userName+'</i>.');
+          },
+        });
 
         $("#time").val("Current time: " + new Date()+'.');
         setInterval(function(){$("#time").html("Current time: " + new Date()+'.');}, 1000);
 
-        $("#header").html("Welcome back, <i>" +user+'</i>.');
-
+        $("#logout").click(function() {        
+          $.ajax({
+            url: "user/"+userEmail,
+            type: "PUT",
+            dataType : "text",
+            success: function( data ) {
+                Cookies.remove('email');
+                window.location.replace('index.html');
+            }
+          });
+        });
 
         $( ".pref_form" ).focusout(function() {
           $.ajax({
@@ -151,7 +170,7 @@
             type: "POST",
             dataType : "text",
 
-            data : {  name: readCookie('user'),
+            data : {  email: userEmail,
                       language: $("#language").val(),
                       city: $("#city").val(),
                     },
@@ -160,11 +179,7 @@
 
         // http://stackoverflow.com/questions/21044798/how-to-use-formdata-for-ajax-file-upload
         $('#ADD').on('submit', function(){
-        console.log("submitted");
-       // console.log("length:"+document.forms[0].length);
-        var formData=new FormData(this);
-
-        console.log("submitting");
+          var formData=new FormData(this);
 
           $.ajax({
             url         : '/image',
@@ -182,15 +197,12 @@
            // error: function() {
           //  alert( "Sorry, there was a problem!" );
           //  } 
-
-            });
-
-        console.log("yeah");
+          });
+          console.log("yeah");
         }); 
-
-});
-</script>
-</head>
+      });
+    </script>
+  </head>
   
   <body>
     <h1 id='header'>Welcome</h1>
@@ -204,30 +216,36 @@
     </div>
 
     <div id='time'></div>
+
+    <div id='upper-right'>
+      <div id='logout_container'>
+        <img id='logout' src="logout.png">
+      </div>
   
-    <div class="whole_pref_container">
-      <div id='pref_main_label'>Personal Preferences</div>
-      <div class="pref_container">
-        <div class="pref_form">
-          <label class='pref_label'>language:</label>
-          <input type="text" class="form-control" id="language" placeholder="Enter language">
-        </div>
-        <div class="pref_form">
-          <label class='pref_label'>City:</label>
-          <input type="text" class="form-control" id="city" placeholder="Enter city">
+      <div class="whole_pref_container">
+        <div id='pref_main_label'>Personal Preferences</div>
+        <div class="pref_container">
+          <div class="pref_form">
+            <label class='pref_label'>language:</label>
+            <input type="text" class="form-control" id="language" placeholder="Enter language">
+          </div>
+          <div class="pref_form">
+            <label class='pref_label'>City:</label>
+            <input type="text" class="form-control" id="city" placeholder="Enter city">
+          </div>
         </div>
       </div>
     </div>
 
-<div class="photo">
-    <form  id="ADD">
-    <div>Add to my album:</div>
-    <input type="file" name="image"/> 
-    <input type="submit" name ="submit"/>
-    </form>
-</div>
+    <div class="photo">
+      <form  id="ADD">
+        <div>Add to my album:</div>
+        <input type="file" name="image"/> 
+        <input type="submit" name ="submit!"/>
+      </form>
+    </div>
 
-</body>
+  </body>
 </html>
 <!--
 /*

@@ -12,112 +12,86 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
 app.use(express.static('static_files'));
-const fs=require("fs");
 var sqlite3 = require('sqlite3').verbose();
+var formidable = require('formidable');
+var util = require('util'),
+var fs = require('fs-extra');
 
 var db = new sqlite3.Database('WanU.db');
 
-db.run('CREATE TABLE IF NOT EXISTS WanU_user (name TEXT PRIMARY KEY, email TEXT)');
-db.run('CREATE TABLE IF NOT EXISTS WanU_user_info (name TEXT PRIMARY KEY, language TEXT, city TEXT)');
+db.run('CREATE TABLE IF NOT EXISTS WanU_user (email TEXT PRIMARY KEY, name TEXT, log_in INTEGER, language TEXT, city TEXT)');
 
-// CREATE a new user
+// creat account
 app.post('/users', function (req, res) {
   var postBody = req.body;
-  var userName = postBody.name;
-  var userEmail= postBody.email;
-  
-  // must have a name!
-  if (!userName || !userEmail) {
-    res.send('ERROR: need more Information');
-    return; // return early!
-  }
+  db.all("SELECT * FROM WanU_user WHERE email='"+postBody.email+"'", function (err, row) {
 
-  var newMemberName=true;
-  var newMemberEmail=true;
-
-  db.all("SELECT * FROM WanU_user", function (err, row) {
-    for (var i = 0; i < row.length; i++) {
-      if (row[i].name==userName)     
-      { 
-      newMemberName=false;
-      }
-      if (row[i].email==userEmail)     
-      { 
-      newMemberEmail=false;
-      }
-    }
-    if (newMemberName && newMemberEmail){
-      db.run("INSERT INTO WanU_user (name, email) VALUES (?,?)", [userName,userEmail]);
-      //add a new directory
-      
-      var mkdirp = require('mkdirp');   
-      mkdirp('static_files/'+userName, function (err) {
-        if (err) console.error(err)
-        else console.log('image folder created!')
-      });
-      
-      res.send('Account created');
-      console.log('Account created');
-    }
-    else 
+    if (row.length==0)
     {
-      if (!newMemberName)res.send('Error: name already exists.');
-      else if (!newMemberEmail)res.send('Error: email already exists.');
-    }
-
-  });
+      db.run("INSERT INTO WanU_user (email, name, log_in) VALUES (?,?,?)", [postBody.email,postBody.name,0]);
   
-  return;
+      //add a new directory    
+  //    var mkdirp = require('mkdirp');   
+  //    mkdirp('static_files/'+postBody.email, function (err) {
+  //      if (err) console.error(err);
+  //    });
+      
+      res.send('Account created.');
+      return;
+    }
+    else {
+      res.send();
+      return;
+    }
+  });
 });
 
+// log in
+app.get('/users/*', function (req, res) {
+  var userEmail = req.params[0]; 
+  db.all("SELECT * FROM WanU_user where email=?",[userEmail], function (err, row) {
+    if (row.length!=0){
+      if(row[0].log_in==0){
+        res.send("OK");
+        db.run("UPDATE WanU_user SET log_in=1 where email=?",[userEmail]);
+        return;
+      }
+      else{
+        res.send("Fail");
+        return;
+      }
+    }
+    else{ 
+      res.send();
+      return;
+    }
+  });
+});
+
+
+// update user preferance
 app.post('/user_pref', function (req, res) {
   var postBody = req.body;
-  var userName = postBody.name;
-  var userLanguage= postBody.language;
-  var userCity= postBody.city;
-  console.log("changing.");
-  db.run("INSERT OR REPLACE INTO WanU_user_info (name,language,city) VALUES (?,?,?)", [userName,userLanguage, userCity]);
-//  res.send('Pref Updated');
-//  console.log('language updated');  
-  return;
+  db.run("UPDATE WanU_user SET language=?, city=? where email=?",[postBody.language,postBody.city,postBody.email]);
 });
 
 //https://coderwall.com/p/p-n7eq/file-uploads-with-jquery-html5-and-formdata
 //really simple file uploads with Express
-
-
-
-
-
 app.post('/image', function (req, res) {
   console.log("reading.....");
-
-
-var express = require("express"),
-    app = express(),
-    formidable = require('formidable'),
-    util = require('util'),
-    fs   = require('fs-extra'),
-    qt   = require('quickthumb');
-
-/////////////
-var form = new formidable.IncomingForm();
+  var form = new formidable.IncomingForm();
   form.parse(req, function(err, fields, files) {
     res.writeHead(200, {'content-type': 'text/plain'});
     res.write('received upload\n\n');
   //  res.send('Account created');
     res.end(util.inspect({fields: fields, files: files}));
   });
-
   form.on('end', function(fields, files) {
-    /* Temporary location of our uploaded file */
-
-
-    
+    // Temporary location of our uploaded file 
     var temp_path = this.openedFiles[0].path;
-    /* The file name of the uploaded file */
+    // The file name of the uploaded file 
      var file_name = this.openedFiles[0].name;
-    /* Location where we want to copy the uploaded file */
+    // Location where we want to copy the uploaded file 
      fs.copy(temp_path, __dirname + file_name, function(err) {  
       if (err) {
         console.error(err);
@@ -126,39 +100,27 @@ var form = new formidable.IncomingForm();
       }
     });
   });
-  return;
 });
 
-
-
-
+// get user preference
 app.get('/user_pref/*', function (req, res) {
-  var userName = req.params[0]; 
-    db.all("SELECT * FROM WanU_user_info WHERE name = ?", [userName], function(err, row){
+  var userEmail = req.params[0]; 
+    db.all("SELECT * FROM WanU_user WHERE email=?", [userEmail], function(err, row){
       if (row.length!=0){
         var user_pref={name: row[0].name, language: row[0].language, city: row[0].city};
         res.send(user_pref);
         return;
       }
     });
-  return;
 });
 
-app.get('/users/*', function (req, res) {
-  var EmailToLookup = req.params[0]; 
-  db.all("SELECT * FROM WanU_user", function (err, row) {
-    for (var i = 0; i < row.length; i++) {
-      if (row[i].email==EmailToLookup)
-      { 
-    	 res.send(row[i].name);
-    	 return;
-      }
-    }
-    res.send();
-  });
-  return;
+// log out
+app.put('/user/*', function (req, res) {
+  var userEmail = req.params[0];
+  console.log(userEmail);
+  db.run("UPDATE WanU_user SET log_in=0 where email=?",[userEmail]);
+  res.send('OK');
 });
-
 /*
 // READ a list of all usernames (note that there's no '*' at the end)
 //
