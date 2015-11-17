@@ -133,6 +133,7 @@
             // readMe Cookie
       $(document).ready(function() {
 
+
         var userEmail = Cookies.get('email');
         var userName = "";
 
@@ -178,28 +179,27 @@
         });
 
         // http://stackoverflow.com/questions/21044798/how-to-use-formdata-for-ajax-file-upload
-        $('#ADD').on('submit', function(){
-          var formData=new FormData(this);
-
+        $('#submitPhoto').click(function(){
+          var formData = new FormData(document.getElementById("ADD"));
           $.ajax({
-            url         : '/image',
+            url: '/image/'+userEmail,
             contentType: false,
             processData: false,
             enctype: "multipart/form-data",
-            data        : formData,
-            type        : 'POST',
-         //   dataType    : 'text/plain',
+            data: formData,
+            type: 'POST',
 
             success: function( data ) {
-            console.log("You received some data!");
+              alert(data);
+              var inputFile = $("#inputFile");
+              inputFile.replaceWith( inputFile = inputFile.clone( true ) );
             },
-            // Code to run if the request fails
-           // error: function() {
-          //  alert( "Sorry, there was a problem!" );
-          //  } 
           });
-          console.log("yeah");
+          
         }); 
+
+
+
       });
     </script>
   </head>
@@ -240,8 +240,8 @@
     <div class="photo">
       <form  id="ADD">
         <div>Add to my album:</div>
-        <input type="file" name="image"/> 
-        <input type="submit" name ="submit!"/>
+        <input type="file" id="inputFile" name="image"/> 
+        <input type="button" value ="submit!" id="submitPhoto"/>
       </form>
     </div>
 

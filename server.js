@@ -14,12 +14,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('static_files'));
 var sqlite3 = require('sqlite3').verbose();
 var formidable = require('formidable');
-var util = require('util'),
+var util = require('util');
 var fs = require('fs-extra');
 
 var db = new sqlite3.Database('WanU.db');
 
-db.run('CREATE TABLE IF NOT EXISTS WanU_user (email TEXT PRIMARY KEY, name TEXT, log_in INTEGER, language TEXT, city TEXT)');
+db.run('CREATE TABLE IF NOT EXISTS WanU_user (email TEXT PRIMARY KEY, name TEXT, log_in INTEGER, language TEXT, city TEXT, pictures INTEGER)');
 
 // creat account
 app.post('/users', function (req, res) {
@@ -28,13 +28,10 @@ app.post('/users', function (req, res) {
 
     if (row.length==0)
     {
-      db.run("INSERT INTO WanU_user (email, name, log_in) VALUES (?,?,?)", [postBody.email,postBody.name,0]);
-  
-      //add a new directory    
-  //    var mkdirp = require('mkdirp');   
-  //    mkdirp('static_files/'+postBody.email, function (err) {
-  //      if (err) console.error(err);
-  //    });
+      db.run("INSERT INTO WanU_user (email, name, log_in, pictures) VALUES (?,?,?,?)", [postBody.email,postBody.name,0,0]);
+   
+      var mkdirp = require('mkdirp');   
+      mkdirp('static_files/'+postBody.email, function (err) {});
       
       res.send('Account created.');
       return;
@@ -48,6 +45,7 @@ app.post('/users', function (req, res) {
 
 // log in
 app.get('/users/*', function (req, res) {
+
   var userEmail = req.params[0]; 
   db.all("SELECT * FROM WanU_user where email=?",[userEmail], function (err, row) {
     if (row.length!=0){
@@ -68,38 +66,11 @@ app.get('/users/*', function (req, res) {
   });
 });
 
-
-// update user preferance
-app.post('/user_pref', function (req, res) {
-  var postBody = req.body;
-  db.run("UPDATE WanU_user SET language=?, city=? where email=?",[postBody.language,postBody.city,postBody.email]);
-});
-
-//https://coderwall.com/p/p-n7eq/file-uploads-with-jquery-html5-and-formdata
-//really simple file uploads with Express
-app.post('/image', function (req, res) {
-  console.log("reading.....");
-  var form = new formidable.IncomingForm();
-  form.parse(req, function(err, fields, files) {
-    res.writeHead(200, {'content-type': 'text/plain'});
-    res.write('received upload\n\n');
-  //  res.send('Account created');
-    res.end(util.inspect({fields: fields, files: files}));
-  });
-  form.on('end', function(fields, files) {
-    // Temporary location of our uploaded file 
-    var temp_path = this.openedFiles[0].path;
-    // The file name of the uploaded file 
-     var file_name = this.openedFiles[0].name;
-    // Location where we want to copy the uploaded file 
-     fs.copy(temp_path, __dirname + file_name, function(err) {  
-      if (err) {
-        console.error(err);
-      } else {
-        console.log("success!");
-      }
-    });
-  });
+// log out
+app.put('/user/*', function (req, res) {
+  var userEmail = req.params[0];
+  db.run("UPDATE WanU_user SET log_in=0 where email=?",[userEmail]);
+  res.send('OK');
 });
 
 // get user preference
@@ -114,13 +85,31 @@ app.get('/user_pref/*', function (req, res) {
     });
 });
 
-// log out
-app.put('/user/*', function (req, res) {
-  var userEmail = req.params[0];
-  console.log(userEmail);
-  db.run("UPDATE WanU_user SET log_in=0 where email=?",[userEmail]);
-  res.send('OK');
+// update user preferance
+app.post('/user_pref', function (req, res) {
+  var postBody = req.body;
+  db.run("UPDATE WanU_user SET language=?, city=? where email=?",[postBody.language,postBody.city,postBody.email]);
 });
+
+app.post('/image/*', function (req, res) {
+  var userEmail = req.params[0]; 
+  var form = new formidable.IncomingForm();
+  form.uploadDir = __dirname + "\\static_files\\" + userEmail;
+  form.parse(req, function(err, fields, files) {
+    db.all("SELECT * FROM WanU_user WHERE email=?", [userEmail], function(err, row){
+      var numPictures = row[0].pictures;
+      numPictures++;
+      db.run("UPDATE WanU_user SET pictures=? where email=?",[numPictures,userEmail]);
+      fs.renameSync(files.image.path,
+                    __dirname + "\\static_files\\" + userEmail+"\\"+numPictures+".jpg");
+      res.send("Image Successfully Uploaded.");
+    });
+  });
+});
+
+
+
+
 /*
 // READ a list of all usernames (note that there's no '*' at the end)
 //
