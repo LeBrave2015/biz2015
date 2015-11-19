@@ -38,8 +38,8 @@
         font-weight: bold;
       }
       #upper-right{
-        overflow: auto;
-        padding-top: 15px;
+        padding: 10px;
+        height: 150px;
         position: absolute;
         width: 40%;
         right: 20px;
@@ -48,13 +48,13 @@
       .whole_pref_container{
        
         background-color:rgba(50,200,50,0.3);
-        width: 70%;
+        width: 60%;
         float: left;
       }
       #logout_container{
         margin: auto;
         clear: left;
-        width: 30%;
+        width: 40%;
         float: left;
         opacity: 1;
       }
@@ -122,64 +122,64 @@
         height: 90%;
       }
       #logout{
+        position: relative;
         width: 80%;
-
-        width:100px;
-        height: 100px;
-        border-radius:100%;
-        background-color: blue; 
-        position: fixed;
-        bottom: 0;
-        right: 40px;
+        height: 50%;
       }
       #logout:hover{
         background-color:rgba(51,153,255,0.6);
+      }
+      #deleteaccount{
+        width: 90%;
+        height: 40%;
+        padding: 10px;
+      }
+      #deleteaccount:hover{
+        background-color:rgba(200,223,255,0.6);
       }
       div.photo {
         position: fixed;
         bottom: 0;
         left: 20px;
         width: 300px;
-        /*border: 3px solid #73AD21;*/
       }
     </style>
 
     <script type="text/javascript">
 
-    var step=0, step1=1
-    function slideit(input){
+      var step=0, step1=1
+      function slideit(input){
   //if browser does not support the image object, exit.
-    var albumLength=Object.keys(input).length;
-    console.log(typeof albumLength);
-    console.log(albumLength>0);
-    if (!document.images)
-        return
-    var slideimages
-    if (albumLength>1){
-      slideimages=input
-      document.getElementById('slide1').src = Cookies.get('email')+'/'+slideimages[step]
-      document.getElementById('slide2').src = Cookies.get('email')+'/'+slideimages[step1]
-    }
-    else{
-      slideimages=new Array()
-      slideimages=["index_eiffel.jpg", "index_geneva.jpg", "toulouse.jpg", "haifa.jpg"]
-      albumLength=4
-      document.getElementById('slide1').src = slideimages[step]
-      document.getElementById('slide2').src = slideimages[step1]
-    }
-    if (step<(albumLength-1))
-      step++
-    else
-      step=0
-    if (step1<(albumLength-1)) //3 for 4 images
-      step1++
-    else
-      step1=0
-    setTimeout(function() {
-    slideit(input);
-     }, 2000)
-
-    }
+        var albumLength=Object.keys(input).length;
+        console.log(typeof albumLength);
+        console.log(albumLength>0);
+        if (!document.images)
+          return
+        var slideimages
+        if (albumLength>1){
+          slideimages=input
+          document.getElementById('slide1').src = Cookies.get('email')+'/'+slideimages[step]
+          document.getElementById('slide2').src = Cookies.get('email')+'/'+slideimages[step1]
+        }
+        else{
+          slideimages=new Array()
+          slideimages=["index_eiffel.jpg", "index_geneva.jpg", "toulouse.jpg", "haifa.jpg"]
+          albumLength=4
+          document.getElementById('slide1').src = slideimages[step]
+          document.getElementById('slide2').src = slideimages[step1]
+        } 
+        if (step<(albumLength-1))
+          step++
+        else
+          step=0
+        if (step1<(albumLength-1)) //3 for 4 images
+          step1++
+        else
+          step1=0
+        setTimeout(function() {
+          slideit(input);
+        }, 2000)
+      }
     </script>
   
     <script src="JS-api/jquery-2.1.4.js"></script>
@@ -205,25 +205,34 @@
             $("#header").html("Welcome back, <i>" +userName+'</i>.');
           },
         });
-/////////////////////////////////////////////////////////////////
+
         $.ajax({
-          url: "user_image/"+userEmail,
+          url: "/image/"+userEmail,
           type: "GET",
           dataType : "json",
 
           success: function( data ) {
-            console.log("this is great");
+  //          console.log("this is great");
             console.log("ready to go");
             console.log(data.photos);
             slideit(data.photos);
           },
         });
-        // here request the list of files.    
- ////////////////////////////////////////////////////////////////
-//variable that will increment through the images
 
-//////////////////////////////////////////////////////////////////////////
-
+        window.setInterval(function() {
+          console.log(Cookies.get('email'));
+          if (Cookies.get('email') == undefined) {
+            $.ajax({
+              url: "user/"+userEmail,
+              type: "PUT",
+              dataType : "text",
+              success: function( data ) {
+                alert("You need to relog in!");
+                window.location.replace('index.html');
+              }
+            });
+          }
+        }, 1000); 
 
         $("#time").val("Current time: " + new Date()+'.');
         setInterval(function(){$("#time").html("Current time: " + new Date()+'.');}, 1000);
@@ -240,6 +249,21 @@
           });
         });
 
+        $("#deleteaccount").click(function() {        
+          var t=confirm("I really want to delete this account.");
+          if (t==1){
+            $.ajax({
+              url: "user/"+userEmail,
+              type: "DELETE",
+              dataType : "text",
+              success: function( data ) {
+                  Cookies.remove('email');
+                  window.location.replace('index.html');
+              }
+            });
+          }
+        });
+
         $( ".pref_form" ).focusout(function() {
           $.ajax({
             url: "user_pref/",
@@ -253,7 +277,6 @@
           });
         });
 
-        // http://stackoverflow.com/questions/21044798/how-to-use-formdata-for-ajax-file-upload
         $('#submitPhoto').click(function(){
           var formData = new FormData(document.getElementById("ADD"));
           $.ajax({
@@ -297,6 +320,7 @@
     <div id='upper-right'>
       <div id='logout_container'>
         <img id='logout' src="logout.png">
+        <img id='deleteaccount' src="deleteaccount.png">
       </div>
   
       <div class="whole_pref_container">
@@ -349,24 +373,5 @@
     });
   });
 
-  $("#deleteButton").click(function() {
-    $.ajax({
-      // The URL for the request - note the simple REST API!
-      // all URLs are relative to http://localhost:3000/
-      url: "users/" + $("#nameBox").val(),
-      type: "DELETE",
-      dataType : "text", // this URL returns a plain text string, not JSON
-
-      success: function( data ) {
-        console.log("You received some data!", data);
-        if (data == 'OK') {
-          $("#status").html("Successfully deleted!");
-        } else {
-          $("#status").html("Error: could not delete!");
-        }
-      },
-    });
-  });
-  */
 
 -->
