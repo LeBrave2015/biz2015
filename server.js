@@ -85,6 +85,21 @@ app.get('/user_pref/*', function (req, res) {
     });
 });
 
+// get user preference
+app.get('/user_image/*', function (req, res) {
+  var userEmail = req.params[0]; 
+  var fs    = require("fs");
+  console.log(userEmail);
+  var files=fs.readdirSync('C:/Users/ywang/Desktop/WanU/static_files/'+userEmail);
+  console.log(files)
+  console.log("Number of photos: "+files.length);
+  console.log(files);
+  var user_photos={photos: files};
+  res.send(user_photos);
+  return;
+      });
+
+
 // update user preferance
 app.post('/user_pref', function (req, res) {
   var postBody = req.body;

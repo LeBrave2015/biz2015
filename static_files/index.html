@@ -110,7 +110,7 @@
 
             success: function( data ) {
               if (data=="OK") {
-                Cookies.set('email', $("#logInEmailBox").val(), { expires: 1/48, path: '' });
+                Cookies.set('email', $("#logInEmailBox").val(), { expires: 1/48 });
                 window.location.replace('log_in.html');
               }
               else if (data=="Fail"){ 
