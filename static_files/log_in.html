@@ -8,18 +8,12 @@
         background-size: 100% 100%;
       }
       .picture_scroller>img {
-        position: relative;
         height: 80%;
-        margin-top: 30px;
-        margin-bottom: 10px;
-        margin-left: 10px;
-        margin-right: 10px;
+        margin: 2%;
         border: 5px solid white;
         text-align:center;
       }
       .picture_scroller{
-        font-size: 30px;
-        font-family: "Verdana";
         text-align:center; 
         float: left;
         width: 50%;
@@ -38,12 +32,12 @@
         font-weight: bold;
       }
       #upper-right{
-        padding: 10px;
-        height: 150px;
+        padding: 20px;
+        height: 20%;
         position: absolute;
         width: 40%;
-        right: 20px;
-        top: 50px;
+        top: 30px;
+        right: 5px;
       }
       .whole_pref_container{
        
@@ -66,7 +60,7 @@
       }
       #pref_main_label{
         text-align:center;
-        font-size: 30px;
+        font-size: 25px;
         font-family: "Verdana";
         font-style: normal;
         font-weight: bold;
@@ -82,18 +76,17 @@
         font-family: "Verdana";
         font-weight: bold;
         font-size: 20px;
-        width: 50%;
+        width: 35%;
         text-align:center;
       }
       .form-control{
         font-family: "Verdana";
+        float: right;
         margin: 5px;
         padding: 5px;
         border: 3px solid #DDDDDD;
-        float: left;
-        clear: right; 
         font-size: 20px;
-        width: 40%;
+        width: 55%;
         text-align:center;
       }
       #time{
@@ -102,24 +95,36 @@
         top: 10px;
         font-size: 15px;
       }
+      .photoUpPart{
+        width: 40%;
+        float: right;
+        font-family: "Comic Sans MS";
+        font-size: 30px;
+        padding: 8px;
+        height:17%;
+      }
       #blog{
-        font-family: "Times New Roman";
+        position: relative;
+        float: left;
+        font-family: "Arial";
         font-size: 30px;
         padding: 15px;
         font-weight: bold;
+        height:17%;
       }
       .picture_holder{
         background-color:rgba(50,200,50,0.3);
-        position: absolute;
+        position: fixed;
         width: 100%;
-        bottom: 100px;
-        height: 50%;
+        bottom: 0%;
+        height: 60%;
       }
       .picture_scroller{
         background-color:rgba(50,200,50,0.3);
         position: relative;
         width: 100%;
-        height: 90%;
+        height: 80%;
+        bottom: 10%;
       }
       #logout{
         position: relative;
@@ -137,12 +142,18 @@
       #deleteaccount:hover{
         background-color:rgba(200,223,255,0.6);
       }
-      div.photo {
-        position: fixed;
-        bottom: 0;
-        left: 20px;
-        width: 300px;
+      #inputFile{
+        width: 45%;
       }
+      #inputFileLabel{
+        float: right;
+        margin-right: 10px;
+        margin-top: 5px;
+      }
+      #photoUpload{
+        float: right;
+      }
+      
     </style>
 
     <script type="text/javascript">
@@ -151,8 +162,8 @@
       function slideit(input){
   //if browser does not support the image object, exit.
         var albumLength=Object.keys(input).length;
-        console.log(typeof albumLength);
-        console.log(albumLength>0);
+   //     console.log(typeof albumLength);
+   //     console.log(albumLength>0);
         if (!document.images)
           return
         var slideimages
@@ -213,14 +224,14 @@
 
           success: function( data ) {
   //          console.log("this is great");
-            console.log("ready to go");
-            console.log(data.photos);
+  //          console.log("ready to go");
+  //          console.log(data.photos);
             slideit(data.photos);
           },
         });
 
         window.setInterval(function() {
-          console.log(Cookies.get('email'));
+    //      console.log(Cookies.get('email'));
           if (Cookies.get('email') == undefined) {
             $.ajax({
               url: "user/"+userEmail,
@@ -277,8 +288,9 @@
           });
         });
 
-        $('#submitPhoto').click(function(){
-          var formData = new FormData(document.getElementById("ADD"));
+        $('#inputFile').change(function(){
+    //      console.log($('#inputFile').val());
+          var formData = new FormData(document.getElementById("photoUpload"));
           $.ajax({
             url: '/image/'+userEmail,
             contentType: false,
@@ -292,7 +304,6 @@
               var inputFile = $("#inputFile");
               inputFile.replaceWith( inputFile = inputFile.clone( true ) );
               location.reload();
-              console.log("great");
 
             },
           });
@@ -309,6 +320,12 @@
     <h1 id='header'>Welcome</h1>
     <div class='picture_holder'>
       <div id="blog">My Album:</div>
+      <div class="photoUpPart">
+        <form  id="photoUpload">
+          <input type="file" id="inputFile"  class="form-control" name="image" accept="image/*"/> 
+          <label id='inputFileLabel'>Add to my album:</label>
+        </form>
+      </div>
       <div class="picture_scroller">
         <img id="slide1" src="istanbul.jpg" /></li>
         <img id="slide2" src="jerusalem.jpg" /></li>
@@ -338,13 +355,7 @@
       </div>
     </div>
 
-    <div class="photo">
-      <form  id="ADD">
-        <div>Add to my album:</div>
-        <input type="file" id="inputFile" name="image"/> 
-        <input type="button" value ="submit!" id="submitPhoto"/>
-      </form>
-    </div>
+    
 
   </body>
 </html>
