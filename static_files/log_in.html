@@ -158,7 +158,7 @@
       
     </style>
     
-	<script src="JS-api/jquery-2.1.4.js"></script>
+	  <script src="JS-api/jquery-2.1.4.js"></script>
     <script src="JS-api/js.cookie.js"></script>
      
 	
@@ -199,23 +199,24 @@
       }
     </script>
   
-	<script>
-	function listit(input){
-	var albumLength=Object.keys(input).length;
-	if (albumLength>0)
-	{
-	for (i=0; i<13; i++){ $( ".photoList" ).append( "<br>" );}
-	var i;
-	for (i = 0; i < albumLength; i++) { 
+	  <script>
+	    function listit(input){
+	      var albumLength=Object.keys(input).length;
+	      if (albumLength>0)
+	      {
+	        for (i=0; i<13; i++){ $( ".photoList" ).append( "<br>" );}
+
+	        var i;
+	        for (i = 0; i < albumLength; i++) { 
 		//$("photoList").append( "<img src='"+Cookies.get('email')+'/'+input[i]+"'/>" );
 		//console.log("<img src='"+Cookies.get('email')+'/'+input[i]+"'/>");
-	    $( ".photoList" ).append( "<hr>" );
-		$( ".photoList" ).append( "<img src='"+Cookies.get('email')+'/'+input[i]+"'  position='relative' height='200' width='200' />" );
-	}
-    $( ".photoList" ).append( "<br>" );   
-	}
-	}
-	</script>
+	          $( ".photoList" ).append( "<hr>" );
+		        $( ".photoList" ).append( "<img src='"+Cookies.get('email')+'/'+input[i]+"'  position='relative' height='200' width='200' />" );
+	        }
+        $( ".photoList" ).append( "<br>" );   
+	      }
+	    }
+	  </script>
 	
     <script type="text/javascript">
             // readMe Cookie
@@ -248,7 +249,7 @@
   //          console.log("ready to go");
   //          console.log(data.photos);
             slideit(data.photos);
-			listit(data.photos);
+			      listit(data.photos);
           },
         });
 
