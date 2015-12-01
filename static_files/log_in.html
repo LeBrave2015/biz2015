@@ -65,6 +65,17 @@
         font-style: normal;
         font-weight: bold;
       }
+	  
+	  #editFileLabel{ 
+		text-align:center;
+		font-size: 30px;
+        font-family: Helvetica;
+        font-style: normal;
+		position: fixed;
+		right: 5%;
+		bottom: 10px;
+        color: blue;
+	  }
       .pref_form{
         width: 100%;
       }
@@ -79,6 +90,12 @@
         width: 35%;
         text-align:center;
       }
+
+	.textboxclass {
+		height: 20px;
+		width: 30px;
+		}
+
       .form-control{
         font-family: "Verdana";
         float: right;
@@ -117,7 +134,7 @@
         position: relative;
         width: 100%;
         top: 200px;
-        height: 60%;
+        height: 65%;
       }
 
       .picture_scroller{
@@ -154,6 +171,11 @@
       }
       #photoUpload{
         float: right;
+      }
+      #photoEdit{
+      	float: left;
+      	position: relative;
+		bottom: 10px;
       }
       
     </style>
@@ -200,24 +222,25 @@
     </script>
   
 	  <script>
-	    function listit(input){
+	    function listit(input, input2){
 	      var albumLength=Object.keys(input).length;
+        console.log(input2);
 	      if (albumLength>0)
 	      {
 	        for (i=0; i<13; i++){ $( ".photoList" ).append( "<br>" );}
-
-	        var i;
+	        $( ".photoList" ).append( "<p id='public' style='font-size: 40px;font-weight: bold;'> New in the public:</p>" );
 	        for (i = 0; i < albumLength; i++) { 
-		//$("photoList").append( "<img src='"+Cookies.get('email')+'/'+input[i]+"'/>" );
-		//console.log("<img src='"+Cookies.get('email')+'/'+input[i]+"'/>");
 	          $( ".photoList" ).append( "<hr>" );
-		        $( ".photoList" ).append( "<img src='"+Cookies.get('email')+'/'+input[i]+"'  position='relative' height='200' width='200' />" );
-	        }
-        $( ".photoList" ).append( "<br>" );   
+
+            	$(".photoList" ).append("<form>");
+		        $( ".photoList" ).append( "<img src='"+'public'+'/'+input[i]+"'  position='relative' height='200' width='200' />" );
+            	//if(typeof input2[i] !== "undefined")
+              $(".photoList" ).append("Votes: <input type='text' id='vote"+i +"' class='textboxclass' value='"+input2[i]+"' name='phototag'> <button id='like"+i+"' type='button'>Like</button></form>");
+	        	}
+            	$( ".photoList" ).append( "<br>");   
 	      }
 	    }
-	  </script>
-	
+	  </script>	
     <script type="text/javascript">
             // readMe Cookie
       $(document).ready(function() {
@@ -249,9 +272,64 @@
   //          console.log("ready to go");
   //          console.log(data.photos);
             slideit(data.photos);
-			      listit(data.photos);
+			//listit(data.photos);
           },
         });
+		
+		
+		  $.ajax({
+          url: "/public_image",
+          type: "GET",
+          dataType : "json",
+
+          success: function( data ) {
+  //          console.log("this is great");
+  //          console.log("ready to go");
+  //          console.log(data.photos);
+          console.log(data);
+			    listit(data.photos, data.votes);
+
+
+      //here we introduce the for loop for ajax vote
+       for (i=0; i<Object.keys(data.photos).length; i++)
+          {
+        var keys1=new Array();
+        //console.log("hi: "+photoList[i]);
+        keys1[i]="#like"+i;       
+        //introduce the closure
+        (function(i)
+          {
+        $(keys1[i]).click(function(){
+        //$("#vote"+i).val(parseInt($("#vote"+i).val())+1);
+        console.log("looks great: ", i);
+        console.log(data.photos[i]);
+        photo=data.photos[i].replace(/\./, "#");
+        // console.log("deleting...");
+        $.ajax({
+        url: "image_vote/",
+        type: "POST",
+        dataType : "text",
+        data : { 
+                vote:  $("#vote"+i).val(),
+                photo: photo,
+                    },
+        success: function( data ) {
+        //console.log(data);
+        location.reload();
+
+        console.log("thanks for your vote");
+                //console.log("successfully removed");
+                }
+        }); 
+        });
+         
+        })(i);
+        
+        }
+
+          },
+        });
+		
 
         window.setInterval(function() {
     //      console.log(Cookies.get('email'));
@@ -281,6 +359,11 @@
                 window.location.replace('index.html');
             }
           });
+        });
+
+         $("#editFileLabel").click(function() {        
+            window.location.replace('mytrove.html');
+        
         });
 
         $("#deleteaccount").click(function() {        
@@ -342,7 +425,7 @@
   <body>
     <h1 id='header'>Welcome</h1>
     <div class='picture_holder'>
-      <div id="blog">My Album:</div>
+      <div id="blog">My Personal Collection:</div>
       <div class="photoUpPart">
         <form  id="photoUpload">
           <input type="file" id="inputFile"  class="form-control" name="image" accept="image/*"/> 
@@ -353,9 +436,14 @@
         <img id="slide1" src="istanbul.jpg" /></li>
         <img id="slide2" src="jerusalem.jpg" /></li>
       </div>
-	   </div>
-	  
     </div>
+	
+	     <div id="editFileLabel">       
+	     <form>
+         <label text-align="right">Edit My Trove</label> 
+         </form>
+		 </div>
+	   
 	<div class="photoList">
 	</div>
 
