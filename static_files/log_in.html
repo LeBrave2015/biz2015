@@ -4,8 +4,8 @@
     <style type="text/css">
       body {
         background-image:url("background.gif");
-        background-repeat: no-repeat;
-        background-size: 100% 100%;
+        background-repeat: repeat-y;
+       /* background-size: 100% 100%;*/
       }
       .picture_scroller>img {
         height: 80%;
@@ -240,6 +240,22 @@
             	$( ".photoList" ).append( "<br>");   
 	      }
 	    }
+
+      function replaceit(votes){
+        var vlength=Object.keys(votes).length;
+        console.log(votes);
+        console.log("length of votes here: "+vlength);
+        if (vlength>0)
+        {
+          for (i=0; i<vlength; i++){
+              console.log(votes[i]);
+              $("#vote"+i).val(votes[i]);
+
+            }
+             
+        }
+      }
+
 	  </script>	
     <script type="text/javascript">
             // readMe Cookie
@@ -308,15 +324,17 @@
         $.ajax({
         url: "image_vote/",
         type: "POST",
-        dataType : "text",
+        dataType : "json",
         data : { 
                 vote:  $("#vote"+i).val(),
                 photo: photo,
                     },
-        success: function( data ) {
-        //console.log(data);
-        location.reload();
-
+        success: function( datum ) {
+        console.log(datum);
+        console.log(datum.photos);
+        console.log(datum.votes.length);
+        console.log(datum.votes);
+        replaceit(datum.votes);
         console.log("thanks for your vote");
                 //console.log("successfully removed");
                 }
@@ -344,7 +362,7 @@
               }
             });
           }
-        }, 1000); 
+        }, 2000); 
 
         $("#time").val("Current time: " + new Date()+'.');
         setInterval(function(){$("#time").html("Current time: " + new Date()+'.');}, 1000);

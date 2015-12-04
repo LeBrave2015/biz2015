@@ -119,7 +119,30 @@ app.get('/image/*', function (req, res) {
   vote=parseInt(vote)+1; //update the vote;
   db.run("UPDATE WanU_image SET vote=? where name=?",[vote,photo]);
   //introduce the database above;
-  res.send("OK");
+
+  var filedb1=new Array();
+  var filedb2=new Array();
+
+  var counter=0;
+  db.all("SELECT name, vote FROM WanU_image", function(err, rows) {  
+        rows.forEach(function (row) {  
+            console.log(row.name, row.vote);  
+            filedb1[counter]=row.name;
+            console.log("photo:"+row.name);
+            console.log("vote:"+row.vote);
+            filedb2[counter]=row.vote;
+            counter=counter+1;
+            console.log("counter: "+counter);
+            console.log(filedb1);
+            console.log(filedb2);
+        });
+          console.log("ko....");
+          var user_photos={photos: filedb1, votes: filedb2,};
+          console.log(user_photos);
+          console.log("...............");
+          res.send(user_photos);  
+    });
+
 });
 // update the votes
 
@@ -205,7 +228,7 @@ app.post('/image_publish', function (req, res) {
     });
 
   //
-  console.log("just publicshed 1 photo");
+  console.log("just published 1 photo");
   res.send("OK");
 
 });
@@ -221,7 +244,7 @@ app.post('/image/*', function (req, res) {
       numPictures++;
       db.run("UPDATE WanU_user SET pictures=? where email=?",[numPictures,userEmail]);
       fs.renameSync(files.image.path,
-                    __dirname + "\\static_files\\" + userEmail+"\\"+numPictures+path.extname(files.image.path));
+                    __dirname + "\\static_files\\" + userEmail+"\\"+userEmail+numPictures+path.extname(files.image.path));
 
     
       res.send("Image Successfully Uploaded.");
